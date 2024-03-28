@@ -97,3 +97,58 @@ enum Priority {
   high
   medium
 }
+
+////
+
+model Player {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name      String
+  goals     Goal[]
+
+  @@map("player")
+}
+
+model Team {
+  id              String @id @default(cuid())
+  name            String
+  firstTeamGames  Game[] @relation("FirstTeamGames")
+  secondTeamGames Game[] @relation("SecondTeamGames")
+  Goal            Goal[]
+  forTeam         Goal[] @relation("ForTeam")
+  toTeam          Goal[] @relation("ToTeam")
+
+  @@map("team")
+}
+
+model Game {
+  id           String   @id @default(cuid())
+  createdDate  DateTime @map("created_date")
+  updatedAt    DateTime @updatedAt @map("updated_date")
+  firstTeam    Team     @relation("FirstTeamGames", fields: [firstTeamId], references: [id])
+  firstTeamId  String   @map("first_team_id")
+  secondTeam   Team     @relation("SecondTeamGames", fields: [secondTeamId], references: [id])
+  secondTeamId String   @map("secon_team_id")
+  Goal         Goal[]   @relation("Game")
+
+  @@map("game")
+}
+
+model Goal {
+  id         String   @id @default(cuid())
+  scoredDate DateTime @map("scored_date")
+  player     Player   @relation(fields: [playerId], references: [id])
+  playerId   String
+  forTeam    Team     @relation("ForTeam", fields: [forTeamId], references: [id])
+  forTeamId  String   @map("for_team_id")
+  toTeam     Team     @relation("ToTeam", fields: [toTeamId], references: [id])
+  toTeamId   String   @map("to_team_id")
+  Team       Team?    @relation(fields: [teamId], references: [id])
+  teamId     String?  @map("team_id")
+  Game       Game     @relation("Game", fields: [gameId], references: [id], onDelete: Cascade)
+  gameId     String   @map("game_id")
+  count      Int
+
+  @@map("goal")
+}
