@@ -11,11 +11,14 @@ import { UserService } from './user.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { CurrentUser } from 'src/auth/decorators/user.decorator';
 import { UserDto } from './dto/user.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@Controller('user')
+@ApiBearerAuth()
+@Controller('user/profile')
+@ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Get()
+  @Get('')
   @Auth()
   async profile(@CurrentUser('id') id: string) {
     return this.userService.profile(id);
